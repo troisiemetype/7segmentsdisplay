@@ -16,28 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "7SegmentsDisplay.h"
+#include "SevenSegmentsDisplay.h"
 
 
 //init the object.
 //Set the values to default, set pin dorection.
 void SevenSegments::init(uint8_t shiftPin, uint8_t clockPin, mode_t mode){
-	_pin = _shiftPin;
-	_clockPin = clockPin
+	_pin = shiftPin;
+	_clockPin = clockPin;
 	_mode = mode;
 	_value = 0;
 	_point = false;
 
-	pinMode(_shiftPin, OUTPUT);
+	pinMode(_pin, OUTPUT);
 	pinMode(_clockPin, OUTPUT);
 }
 
 //Shift out the value to the shift register
 void SevenSegments::update(){
 	uint8_t value = _value;
-	value &= ((_point ^ _mode) << 8);
+	if(_point){
+		if(_mode == AC){
+			value &= ~(1 << 7);
+		} else {
+			value |= (1 << 7);
+		}
+	}
 
-	shiftOut(_pin, clockPin, MSBFIRST, _value);
+	shiftOut(_pin, _clockPin, MSBFIRST, value);
 }
 
 //Set the current value
@@ -47,7 +53,7 @@ void SevenSegments::setValue(uint8_t value){
 		_value = 0;
 	//Else get the right byte value for this digit.
 	} else {
-		_value = table[value];
+		_value = _table[value];
 	}
 
 	//Invert bits if display is common anode.

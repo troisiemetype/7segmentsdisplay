@@ -30,13 +30,17 @@ public:
 		AC,
 	};
 
-	void init(uint8_t shiftPin, uint8_t clockPin, mode = AC);
+	void init(uint8_t shiftPin, uint8_t clockPin, mode_t mode = AC);
 
 	void update();
 
 	void setValue(uint8_t value);
+	void clrValue();
 	void setPoint(bool value = true);
 	void clrPoint();
+
+	// TODO: see if it works that way, or if it should be defined elsewere.
+	const uint8_t _table[10] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
 
 protected:
 	uint8_t _pin;
@@ -46,8 +50,6 @@ protected:
 
 	mode_t _mode;
 
-	// TODO: see if it works that way, or if it should be defined elsewere.
-	static uint8_t table[10] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
 
 };
 
