@@ -20,7 +20,7 @@
 
 
 //init the object.
-//Set the values to default, set pin dorection.
+//Set the values to default, set pin direction.
 void SevenSegments::init(uint8_t shiftPin, uint8_t clockPin, mode_t mode){
 	_pin = shiftPin;
 	_clockPin = clockPin;
@@ -75,4 +75,70 @@ void SevenSegments::setPoint(bool value){
 //Convenience function to unset point.
 void SevenSegments::clrPoint(){
 	setPoint(false);
+}
+
+FourDigits::~FourDigits(){
+	for(uint8_t i = 0; i < 4; i++){
+		delete _digits[i];
+	}
+}
+
+void FourDigits::init(uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4){
+	_minutes = 0;
+	_seconds = 0;
+	_points = 0;
+	_current = 0;
+	_enable = true;
+
+	_enablePins[0] = pin1;
+	_enablePins[1] = pin2;
+	_enablePins[2] = pin3;
+	_enablePins[3] = pin4;
+
+	for(uint8_t i = 0; i < 4; i++){
+		SevenSegments *digit = new SevenSegments();
+		digit->init(4, 5, SevenSegments::AC);
+		_digits[i] = digit;
+
+		pinMode(_enablePins[i], OUTPUT);
+	}
+
+}
+
+void FourDigits::update(){
+	_digits[0]->setValue(_seconds%10);
+	_digits[1]->setValue(_seconds/10);
+	_digits[2]->setValue(_minutes%10);
+	_digits[3]->setValue(_minutes/10);
+
+	for(uint8_t i = 0; i < 4; i++){
+		digitalWrite(_enablePins[i], LOW);
+	}
+
+	_digits[_current]->update();
+	if(_enable)	digitalWrite(_enablePins[_current], HIGH);
+
+	if(++_current > 3) _current = 0;
+
+}
+
+void FourDigits::setMinutes(uint8_t minutes){
+	_minutes = minutes;
+}
+
+void FourDigits::setSeconds(uint8_t seconds){
+	_seconds = seconds;
+}
+
+void FourDigits::setPoint(bool value){
+		_digits[2]->setPoint(value);
+		_points = value;
+}
+
+void FourDigits::clrPoint(){
+	setPoint(false);
+}
+
+void FourDigits::enable(bool value){
+	_enable = value;
 }

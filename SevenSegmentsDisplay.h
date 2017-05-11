@@ -53,4 +53,32 @@ protected:
 
 };
 
+class FourDigits{
+public:
+
+	~FourDigits();
+
+	void init(uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4);
+
+	void update();
+
+	void setMinutes(uint8_t minutes);
+	void setSeconds(uint8_t seconds);
+	void setPoint(bool value = true);
+	void clrPoint();
+	void enable(bool value = true);
+
+protected:
+	uint8_t _minutes;
+	uint8_t _seconds;
+	bool _points;
+
+	SevenSegments* _digits[4];
+	uint8_t _enablePins[4];
+
+	uint8_t _current;
+	bool _enable;
+
+};
+
 #endif
